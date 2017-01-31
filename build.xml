@@ -1,0 +1,7 @@
+<project name="artospaj_phing_hashmap" default="introduce_myself">
+    <autoloader autoloaderpath="${phing.dir.artospaj_phing_hashmap}/vendor/autoload.php" />
+
+    <taskdef name="loadJSON" classname="Artospaj\PhingHashmap\JsonDataLoader" />
+    <taskdef name="getHashValue" classname="Artospaj\PhingHashmap\ValueGetter" />
+    <taskdef name="setHashValue" classname="Artospaj\PhingHashmap\ValueSetter" />
+</project>

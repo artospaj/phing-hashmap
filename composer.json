@@ -1,0 +1,20 @@
+{
+  "name": "artospaj/phing-hashmap",
+  "description": "This package provides hashmap functionality that can be used to share data between phing tasks.",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Artur Wolny",
+      "email": "artospaj@gmail.com"
+    }
+  ],
+  "autoload-dev": {
+    "psr-4": {
+      "Artospaj\\PhingHashmap\\": "./src"
+    }
+  },
+  "require": {
+    "phing/phing": "^2"
+  }
+}
