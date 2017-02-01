@@ -14,22 +14,7 @@ class JsonDataLoader extends \Task
     protected $dataset;
     protected $configfile;
     protected $config;
-
-    /**
-     * @param string $configfile
-     */
-    public function setConfigfile($configfile)
-    {
-        $this->configfile = $configfile;
-    }
-
-    /**
-     * @param mixed $dataset
-     */
-    public function setDataset($dataset)
-    {
-        $this->dataset = $dataset;
-    }
+    protected $prefix;
 
     /**
      *  Called by the project to let the task do it's work. This method may be
@@ -51,14 +36,71 @@ class JsonDataLoader extends \Task
             throw new \BuildException("Configfile '{$this->configfile}' doesn't exist.");
         }
 
-        $this->config = json_decode(file_get_contents($this->configfile), true);
+        $jsonConfig = json_decode(file_get_contents($this->configfile), true);
 
-        if ($this->config === null) {
+        if ($jsonConfig === null) {
             throw new \BuildException("Configfile '{$this->configfile}' is not a valid JSON.");
         }
+
+        $this->config = $this->recursiveBuildConfig($jsonConfig, $this->prefix);
 
         foreach($this->config as $key => $value) {
             ValueStorage::getInstance($this->dataset)->setValue($key, $value);
         }
+    }
+
+    public function init()
+    {
+        parent::init();
+
+        $this->config = null;
+        $this->configfile = null;
+        $this->dataset = null;
+        $this->prefix = null;
+    }
+
+    /**
+     * @param string $configfile
+     */
+    public function setConfigfile($configfile)
+    {
+        $this->configfile = $configfile;
+    }
+
+    /**
+     * @param mixed $dataset
+     */
+    public function setDataset($dataset)
+    {
+        $this->dataset = $dataset;
+    }
+
+    /**
+     * @param mixed $prefix
+     */
+    public function setPrefix($prefix)
+    {
+        $this->prefix = $prefix;
+    }
+
+    private function recursiveBuildConfig($data, $key = null)
+    {
+        $output = [];
+
+        if (is_array($data)) {
+            foreach($data as $dataKey => $dataItem) {
+                $output = array_replace(
+                    $output,
+                    $this->recursiveBuildConfig(
+                        $dataItem,
+                        implode('.', array_filter([$key, $dataKey], function ($val) { return $val !== null;}))
+                    )
+                );
+            }
+        } else if ($key) {
+            $output[$key] = $data;
+        }
+
+        return $output;
     }
 }
